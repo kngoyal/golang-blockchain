@@ -7,19 +7,22 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
-const dbPath = "../blocks"
+const dbPath = "./blocks"
 
 type BlockChain struct {
 	LastHash []byte
 	Database *badger.DB
 }
 
+type BlockChainIterator struct {
+	CurrentHash []byte
+	Database    *badger.DB
+}
+
 func InitBlockChain() *BlockChain {
 	var lastHash []byte
 
-	opts := badger.DefaultOptions
-	opts.Dir = dbPath
-	opts.ValueDir = dbPath
+	opts := badger.DefaultOptions(dbPath)
 
 	db, err := badger.Open(opts)
 	Handle(err)
@@ -39,7 +42,7 @@ func InitBlockChain() *BlockChain {
 		} else {
 			item, err := txn.Get([]byte("lh"))
 			Handle(err)
-			lastHash, err = item.Value()
+			lastHash, err = item.ValueCopy(lastHash)
 			return err
 		}
 	})
@@ -54,8 +57,7 @@ func (chain *BlockChain) AddBlock(data string) {
 	err := chain.Database.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte("lh"))
 		Handle(err)
-		lastHash, err = item.Value()
-
+		lastHash, err = item.ValueCopy(lastHash)
 		return err
 	})
 	Handle(err)
@@ -73,6 +75,30 @@ func (chain *BlockChain) AddBlock(data string) {
 	})
 
 	Handle(err)
+}
+
+func (chain *BlockChain) Iterator() *BlockChainIterator {
+	iter := &BlockChainIterator{chain.LastHash, chain.Database}
+
+	return iter
+}
+
+func (iter *BlockChainIterator) Previous() *Block {
+	var block *Block
+	err := iter.Database.View(func(txn *badger.Txn) error {
+		item, err := txn.Get(iter.CurrentHash)
+		Handle(err)
+		var encodedBlock []byte
+		encodedBlock, err = item.ValueCopy(encodedBlock)
+		block = Deserialize(encodedBlock)
+
+		return err
+	})
+
+	Handle(err)
+
+	iter.CurrentHash = block.PrevHash
+	return block
 }
 
 func Handle(err error) {
