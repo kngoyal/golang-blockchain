@@ -1,4 +1,4 @@
-module github.com/golang-blockchain/part-4
+module github.com/golang-blockchain/part-5
 
 go 1.16
 
