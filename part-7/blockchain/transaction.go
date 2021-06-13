@@ -24,13 +24,13 @@ type Transaction struct {
 }
 
 func (tx Transaction) Serialize() []byte {
-	var encoded bytes.Buffer
+	var buffer bytes.Buffer
 
-	enc := gob.NewEncoder(&encoded)
+	enc := gob.NewEncoder(&buffer)
 	err := enc.Encode(tx)
 	utils.Handle(err)
 
-	return encoded.Bytes()
+	return buffer.Bytes()
 }
 
 func (tx *Transaction) Hash() []byte {
