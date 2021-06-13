@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-7/utils"
 	log "github.com/sirupsen/logrus"
 )
 

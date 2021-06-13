@@ -13,8 +13,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/golang-blockchain/part-6/utils"
-	"github.com/golang-blockchain/part-6/wallet"
+	"github.com/golang-blockchain/part-7/utils"
+	"github.com/golang-blockchain/part-7/wallet"
 )
 
 type Transaction struct {

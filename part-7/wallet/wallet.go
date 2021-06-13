@@ -7,7 +7,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 
-	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-7/utils"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ripemd160"
 )

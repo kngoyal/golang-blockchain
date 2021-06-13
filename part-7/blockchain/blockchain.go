@@ -10,7 +10,7 @@ import (
 	"runtime"
 
 	"github.com/dgraph-io/badger"
-	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-7/utils"
 )
 
 const (

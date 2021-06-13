@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/golang-blockchain/part-6/blockchain"
-	"github.com/golang-blockchain/part-6/utils"
-	"github.com/golang-blockchain/part-6/wallet"
+	"github.com/golang-blockchain/part-7/blockchain"
+	"github.com/golang-blockchain/part-7/utils"
+	"github.com/golang-blockchain/part-7/wallet"
 	log "github.com/sirupsen/logrus"
 )
 

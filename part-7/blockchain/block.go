@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/gob"
 
-	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-7/utils"
 )
 
 type Block struct {
