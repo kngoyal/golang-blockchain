@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/golang-blockchain/part-5/blockchain"
+	"github.com/golang-blockchain/part-6/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -85,8 +85,8 @@ func (ws *Wallets) SaveFile() {
 
 	encoder := gob.NewEncoder(&content)
 	err := encoder.Encode(ws)
-	blockchain.Handle(err)
+	utils.Handle(err)
 
 	err = ioutil.WriteFile(walletFile, content.Bytes(), 0644)
-	blockchain.Handle(err)
+	utils.Handle(err)
 }

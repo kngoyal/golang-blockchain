@@ -1,19 +1,15 @@
 package wallet
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
 
-	"github.com/golang-blockchain/part-5/blockchain"
+	"github.com/golang-blockchain/part-6/utils"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ripemd160"
-)
-
-const (
-	checksumLength = 4
-	version        = byte(0x00)
 )
 
 type Wallet struct {
@@ -24,7 +20,7 @@ type Wallet struct {
 func (w Wallet) Address() []byte {
 	pubHash := PublicKeyHash(w.PublicKey)
 
-	versionedHash := append([]byte{version}, pubHash...)
+	versionedHash := append([]byte{utils.Version}, pubHash...)
 	checkSum := CheckSum(versionedHash)
 
 	fullHash := append(versionedHash, checkSum...)
@@ -37,10 +33,20 @@ func (w Wallet) Address() []byte {
 	return address
 }
 
+func ValidateAddress(address string) bool {
+	pubKeyHash := Base58Decode([]byte(address))
+	actualCheckSum := pubKeyHash[len(pubKeyHash)-utils.ChecksumLength:]
+	version := pubKeyHash[0]
+	pubKeyHash = pubKeyHash[1 : len(pubKeyHash)-utils.ChecksumLength]
+	targetCheckSum := CheckSum(append([]byte{version}, pubKeyHash...))
+
+	return bytes.Compare(actualCheckSum, targetCheckSum) == 0
+}
+
 func NewKeyPair() (ecdsa.PrivateKey, []byte) {
 	curve := elliptic.P256()
 	private, err := ecdsa.GenerateKey(curve, rand.Reader)
-	blockchain.Handle(err)
+	utils.Handle(err)
 
 	pub := append(private.PublicKey.X.Bytes(), private.PublicKey.Y.Bytes()...)
 	return *private, pub
@@ -57,7 +63,7 @@ func PublicKeyHash(pubKey []byte) []byte {
 
 	hasher := ripemd160.New()
 	_, err := hasher.Write(pubHash[:])
-	blockchain.Handle(err)
+	utils.Handle(err)
 
 	publicRipMD := hasher.Sum(nil)
 
@@ -68,5 +74,5 @@ func CheckSum(payload []byte) []byte {
 	firstHash := sha256.Sum256(payload)
 	secondHash := sha256.Sum256(firstHash[:])
 
-	return secondHash[:checksumLength]
+	return secondHash[:utils.ChecksumLength]
 }
