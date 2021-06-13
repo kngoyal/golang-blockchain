@@ -7,8 +7,9 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/golang-blockchain/part-5/blockchain"
-	"github.com/golang-blockchain/part-5/wallet"
+	"github.com/golang-blockchain/part-6/blockchain"
+	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-6/wallet"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,11 +33,16 @@ func (cli *CommandLine) valdiateArgs() {
 }
 
 func (cli *CommandLine) getBalance(address string) {
+	if !wallet.ValidateAddress(address) {
+		log.Panic("Wallet Address is Invalid")
+	}
 	chain := blockchain.ContinueBlockChain(address)
 	defer chain.Database.Close()
 
 	balance := 0
-	UTXOs := chain.FindUTXO(address)
+	pubKeyHash := wallet.Base58Decode([]byte(address))
+	pubKeyHash = pubKeyHash[1 : len(pubKeyHash)-utils.ChecksumLength]
+	UTXOs := chain.FindUTXO(pubKeyHash)
 
 	for _, out := range UTXOs {
 		balance += out.Value
@@ -46,6 +52,9 @@ func (cli *CommandLine) getBalance(address string) {
 }
 
 func (cli *CommandLine) createBlockChain(address string) {
+	if !wallet.ValidateAddress(address) {
+		log.Panic("Wallet Address is Invalid")
+	}
 	chain := blockchain.InitBlockChain(address)
 	chain.Database.Close()
 	fmt.Println("Finished!")
@@ -58,10 +67,15 @@ func (cli *CommandLine) printChain() {
 
 	for {
 		block := iter.Previous()
-		fmt.Printf("Previous Hash: %x\n", block.PrevHash)
-		fmt.Printf("Hash: %x\n", block.Hash)
+		log.Infof("Previous Hash: %x\n", block.PrevHash)
+		log.Infof("Hash: %x\n", block.Hash)
 		pow := blockchain.NewProof(block)
-		fmt.Printf("POW: %s\n\n", strconv.FormatBool(pow.Validate()))
+		log.Infof("POW: %s\n\n", strconv.FormatBool(pow.Validate()))
+
+		for _, tx := range block.Transactions {
+			log.Info(tx)
+		}
+		fmt.Println()
 
 		if len(block.PrevHash) == 0 {
 			break
@@ -70,6 +84,12 @@ func (cli *CommandLine) printChain() {
 }
 
 func (cli *CommandLine) send(from, to string, amount int) {
+	if !wallet.ValidateAddress(from) {
+		log.Panic("FROM Wallet Address is Invalid")
+	}
+	if !wallet.ValidateAddress(to) {
+		log.Panic("TO Wallet Address is Invalid")
+	}
 	chain := blockchain.ContinueBlockChain(from)
 	defer chain.Database.Close()
 
@@ -114,22 +134,22 @@ func (cli *CommandLine) Run() {
 	switch os.Args[1] {
 	case "getbalance":
 		err := getBalanceCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	case "createblockchain":
 		err := createBlockchainCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	case "send":
 		err := sendCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	case "createwallet":
 		err := createWalletCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	case "listaddresses":
 		err := listAddressesCmd.Parse(os.Args[2:])
-		blockchain.Handle(err)
+		utils.Handle(err)
 	default:
 		cli.printUsage()
 		runtime.Goexit()
