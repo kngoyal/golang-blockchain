@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/golang-blockchain/part-5/logger"
-	"github.com/golang-blockchain/part-5/cli"
+	"github.com/golang-blockchain/part-6/cli"
+	"github.com/golang-blockchain/part-6/utils"
 )
 
 func main() {
-	logger.SetLogLevel()
+	utils.SetLogLevel()
 	defer os.Exit(0)
 	cmd := cli.CommandLine{}
 	cmd.Run()
