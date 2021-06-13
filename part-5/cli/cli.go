@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang-blockchain/part-5/blockchain"
 	"github.com/golang-blockchain/part-5/wallet"
+	log "github.com/sirupsen/logrus"
 )
 
 type CommandLine struct{}
@@ -78,12 +79,12 @@ func (cli *CommandLine) send(from, to string, amount int) {
 }
 
 func (cli *CommandLine) createWallet() {
-	fmt.Print("Creating wallet . . . ")
+	log.Trace("Creating wallet . . . ")
 	wallets, _ := wallet.CreateWallets()
 	address := wallets.AddWallet()
 	wallets.SaveFile()
 
-	fmt.Printf("New address is  : %s\n", address)
+	log.Infof("New address is: %s\n", address)
 }
 
 func (cli *CommandLine) listAddresses() {
@@ -126,7 +127,7 @@ func (cli *CommandLine) Run() {
 	case "createwallet":
 		err := createWalletCmd.Parse(os.Args[2:])
 		blockchain.Handle(err)
-	case "listadresses":
+	case "listaddresses":
 		err := listAddressesCmd.Parse(os.Args[2:])
 		blockchain.Handle(err)
 	default:

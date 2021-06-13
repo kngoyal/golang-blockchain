@@ -3,16 +3,16 @@ package blockchain
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 
 	"github.com/dgraph-io/badger"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
-	dbPath      = "./blocks"
-	dbFile      = "./blocks/MANIFEST"
+	dbPath      = "./tmp/blocks"
+	dbFile      = "./tmp/blocks/MANIFEST"
 	genesisData = "First Transaction from Genesis"
 )
 
@@ -215,6 +215,6 @@ Work:
 
 func Handle(err error) {
 	if err != nil {
-		log.Panic(err)
+		log.Panicf("ERROR occured : %s\n", err)
 	}
 }
