@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/golang-blockchain/part-6/cli"
-	"github.com/golang-blockchain/part-6/utils"
+	"github.com/golang-blockchain/part-7/cli"
+	"github.com/golang-blockchain/part-7/utils"
 )
 
 func main() {
